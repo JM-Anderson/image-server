@@ -23,6 +23,11 @@ signals:
 private:
     qintptr socketDescriptor;
     QString text;
+    QTcpSocket* socket;
+
+private slots:
+    void onReadyRead();
+    bool sendFile(QString path);
 };
 
 #endif
