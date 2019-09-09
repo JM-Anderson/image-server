@@ -6,6 +6,8 @@
 #include <QtNetwork>
 #include <iostream>
 
+#include "command.h"
+
 using namespace std;
 
 class Thread : public QThread
@@ -13,7 +15,7 @@ class Thread : public QThread
     Q_OBJECT
 
 public:
-    Thread(qintptr socketDescriptor, const QString &fortune, QObject *parent);
+    Thread(qintptr socketDescriptor, QObject *parent);
 
     void run() override;
 
@@ -22,7 +24,6 @@ signals:
 
 private:
     qintptr socketDescriptor;
-    QString text;
     QTcpSocket* socket;
 
 private slots:

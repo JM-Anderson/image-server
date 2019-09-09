@@ -1,7 +1,7 @@
 #include "thread.h"
 
-Thread::Thread(qintptr socketDescriptor, const QString &fortune, QObject *parent)
-    : QThread(parent), socketDescriptor(socketDescriptor), text(fortune) {
+Thread::Thread(qintptr socketDescriptor, QObject *parent)
+    : QThread(parent), socketDescriptor(socketDescriptor) {
 }
 
 void Thread::run()
@@ -25,6 +25,8 @@ void Thread::run()
 
 void Thread::onReadyRead() {
     QByteArray command = socket->readAll();
+
+    /*
     if (command[0] == 'f') {
         sendFile("in.txt");
     } else if (command[0] == 'q') {
@@ -35,6 +37,7 @@ void Thread::onReadyRead() {
         // Simply ignore the error. It is a Qt bug.
         socket->waitForDisconnected();
     }
+    */
 }
 
 bool Thread::sendFile(QString path) {
