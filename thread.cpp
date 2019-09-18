@@ -17,10 +17,17 @@ void Thread::run()
 
     cout << "Receiving client\n";
 
-    while (true) {
-        socket->waitForReadyRead();
-        onReadyRead();
+    for (int i=0; i < 1; i++) {
+        if (!(socket->state() == QAbstractSocket::ConnectedState))
+            break;
+
+        cout << "Sending file\n";
+        sendFile("/home/joshua/Documents/examples/ROICDATA.raw");
     }
+
+    socket->disconnectFromHost();
+    socket->waitForDisconnected();
+    cout << "\n\n";
 }
 
 void Thread::onReadyRead() {
@@ -47,18 +54,30 @@ bool Thread::sendFile(QString path) {
 
     // Number of bytes read so far
     qint64 amountRead = 0;
-    // Number of bytes to read at a time
-    qint64 chunkSize = 8;
 
-    while (amountRead < file.size()){
-        QByteArray data;
-        data = file.read(chunkSize);
-        amountRead += data.size();
-        socket->write(data);
+    while (!file.atEnd()){
+        QByteArray outBuffer;
+        QDataStream outStream(&outBuffer, QIODevice::WriteOnly);
 
-        // Forces socket to write data immediately rather than
-        // add to buffer
-        socket->waitForBytesWritten();
+        for (int i=0; i < 480*640; i++) {
+            uint16_t pix;
+            file.read(reinterpret_cast<char *>(&pix), sizeof(pix));
+            outStream << pix;
+        }
+        amountRead += outBuffer.size();
+        cout << "Amount read: " << amountRead << "\n";
+
+        if (socket->state() == QAbstractSocket::ConnectedState) {
+            qint64 written = socket->write(outBuffer);
+
+            cout << "Bytes written: " << written << "\n";
+
+            // Forces socket to write data immediately rather than
+            // add to buffer
+            socket->waitForBytesWritten();
+        } else {
+            break;
+        }
     }
     file.close();
 

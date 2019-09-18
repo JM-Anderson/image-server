@@ -1,10 +1,6 @@
 #include "server.h"
 #include "thread.h"
 
-#include <QRandomGenerator>
-
-#include <stdlib.h>
-
 Server::Server(QObject *parent) : QTcpServer(parent)
 {
 }
