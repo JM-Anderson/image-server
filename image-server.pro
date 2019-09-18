@@ -17,7 +17,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
 	main.cpp \
-	pong.cpp \
 	server.cpp \
 	thread.cpp
 
@@ -28,6 +27,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     command.h \
-    pong.h \
     server.h \
-    thread.h
+    thread.h \
+    commands/sendfile.h \
+    commandhandler.h

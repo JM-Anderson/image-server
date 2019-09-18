@@ -1,5 +1,8 @@
 #include "thread.h"
 
+#include <QIODevice>
+#include <QTextStream>
+
 Thread::Thread(qintptr socketDescriptor, QObject *parent)
     : QThread(parent), socketDescriptor(socketDescriptor) {
 }
@@ -17,34 +20,44 @@ void Thread::run()
 
     cout << "Receiving client\n";
 
-    for (int i=0; i < 1; i++) {
-        if (!(socket->state() == QAbstractSocket::ConnectedState))
+    cmdHandler << new SendFile(socket);
+
+    cout << "starting loop\n";
+
+    while (true) {
+        if (socket->waitForReadyRead()) {
+            onReadyRead();
+        } else {
             break;
-
-        cout << "Sending file\n";
-        sendFile("/home/joshua/Documents/examples/ROICDATA.raw");
+        }
     }
-
-    socket->disconnectFromHost();
-    socket->waitForDisconnected();
-    cout << "\n\n";
 }
 
 void Thread::onReadyRead() {
-    QByteArray command = socket->readAll();
 
     /*
-    if (command[0] == 'f') {
-        sendFile("in.txt");
-    } else if (command[0] == 'q') {
-        // Disconnects socket
-        socket->disconnectFromHost();
+     * Note: there could be a memory leak here if malicious clients keep sending
+     * messages that have no '\0' character to signal the end of a message.
+     */
 
-        // This will cause an error message: `QAbstractSocket::waitForDisconnected() is not allowed in UnconnectedState`
-        // Simply ignore the error. It is a Qt bug.
-        socket->waitForDisconnected();
+    // Acccept all incoming data into buffer
+    inBuffer.append(socket->readAll());
+
+    /*
+     * If there is a terminating character, assume a full command was
+     * sent and try to execute it */
+    while (inBuffer.contains('\0')) {
+        // This reads the QByteArray up to the first \0 character
+        QString cmdName = QString(inBuffer);
+
+        // This deletes all the characters that were just read
+        inBuffer.remove(0, inBuffer.indexOf('\0')+1);
+
+        // endl is necessary here
+        cout << "Received command: " <<  cmdName.toStdString() << "\n";
+        cmdHandler.tryRun(cmdName, QByteArray("/home/jmanders/Documents/LV-image-server/examples/ENVI_ROICWARM/ROICDATA.raw"));
     }
-    */
+
 }
 
 bool Thread::sendFile(QString path) {
