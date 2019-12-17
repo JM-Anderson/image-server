@@ -20,25 +20,9 @@ void Thread::run()
 
     cout << "Receiving client\n";
 
-    cmdHandler << new SendFile(socket);
-
-<<<<<<< HEAD
-        cout << "Sending file\n";
-        //sendFile("/home/joshua/Documents/examples/ROICDATA.raw");
-        sendFile("/home/joshua/Documents/testbed-images/image1.envi");
-
-    }
-=======
-    cout << "starting loop\n";
->>>>>>> e8ef4b3380ad7d72aa8d4bf8ba79285ba86026a3
-
-    while (true) {
-        if (socket->waitForReadyRead()) {
-            onReadyRead();
-        } else {
-            break;
-        }
-    }
+    //cmdHandler << new SendFile(socket);
+    cout << "Sending file\n";
+    sendFile("E://Docs/testbed-images/image1.envi");
 }
 
 void Thread::onReadyRead() {
