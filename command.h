@@ -8,16 +8,20 @@ class Command : public QObject
     Q_OBJECT
 
 public:
-    Command(QObject* parent, QTcpSocket* socket) : QObject(parent), socket(socket) {}
+    Command(QTcpSocket* socket, QObject* parent = nullptr) : QObject(parent), socket(socket) {}
     virtual ~Command() {}
 
-    virtual void init() {}
-    virtual void run(QByteArray args) = 0;
+    /*
+     * The method that runs when the command is called
+     */
+    virtual bool run(QByteArray args) = 0;
 
-    char getCmdByte() { return cmdByte; }
+    /*
+     * Returns the name of the command as a char array
+     */
+    virtual QString getName() = 0;
 
 protected:
-    char cmdByte;
     QTcpSocket* socket;
 
 };

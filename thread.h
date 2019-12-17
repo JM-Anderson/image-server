@@ -7,6 +7,8 @@
 #include <iostream>
 
 #include "command.h"
+#include "commandhandler.h"
+#include "commands/sendfile.h"
 
 using namespace std;
 
@@ -23,8 +25,15 @@ signals:
     void error(QTcpSocket::SocketError socketError);
 
 private:
+    // TCP Socket information
     qintptr socketDescriptor;
     QTcpSocket* socket;
+
+    // Buffer for holding incoming data
+    QByteArray inBuffer;
+
+    // Handles incoming commands
+    CommandHandler cmdHandler;
 
 private slots:
     void onReadyRead();
