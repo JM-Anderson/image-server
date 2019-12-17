@@ -22,7 +22,9 @@ void Thread::run()
             break;
 
         cout << "Sending file\n";
-        sendFile("/home/joshua/Documents/examples/ROICDATA.raw");
+        //sendFile("/home/joshua/Documents/examples/ROICDATA.raw");
+        sendFile("/home/joshua/Documents/testbed-images/image1.envi");
+
     }
 
     socket->disconnectFromHost();
@@ -65,12 +67,9 @@ bool Thread::sendFile(QString path) {
             outStream << pix;
         }
         amountRead += outBuffer.size();
-        cout << "Amount read: " << amountRead << "\n";
-
+        cout << 100.0 * float(amountRead) / file.size() << "\n";
         if (socket->state() == QAbstractSocket::ConnectedState) {
             qint64 written = socket->write(outBuffer);
-
-            cout << "Bytes written: " << written << "\n";
 
             // Forces socket to write data immediately rather than
             // add to buffer
