@@ -9,6 +9,10 @@
 using namespace std;
 
 class CommandHandler {
+
+private:
+    QMap<QString, Command*> commands;
+
 public:
     CommandHandler() {}
     ~CommandHandler() {
@@ -25,16 +29,15 @@ public:
         return this;
     }
 
-    bool tryRun(const QString cmdName, const QByteArray args) {
+    bool tryRun(const QString cmdName, const QString args) {
         if (commands.contains(cmdName)) {
-            cout << "Command not found: " << cmdName.toStdString();
-            return commands.value(cmdName)->run(QByteArray());
-        } else
+            cout << "[" << cmdName.toStdString() << "]\n";
+            return commands.value(cmdName)->run(args);
+        } else {
+            cout << "Command not found: " << cmdName.toStdString() << "\n";
             return false;
+        }
     }
-
-private:
-    QMap<QString, Command*> commands;
 };
 
 #endif // COMMANDHANDLER_H

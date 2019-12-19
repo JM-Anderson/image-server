@@ -2,27 +2,37 @@
 #define COMMAND_H
 
 #include <QTcpSocket>
+#include <QDir>
 
 class Command : public QObject
 {
     Q_OBJECT
 
 public:
-    Command(QTcpSocket* socket, QObject* parent = nullptr) : QObject(parent), socket(socket) {}
+    Command(QTcpSocket* socket, QDir dataDir, QObject* parent = nullptr) :
+        QObject(parent), socket(socket), dataDir(dataDir) {}
+
+    /*
+     * Default destructor
+     */
     virtual ~Command() {}
 
     /*
      * The method that runs when the command is called
      */
-    virtual bool run(QByteArray args) = 0;
+    virtual bool run(QString args) = 0;
 
     /*
-     * Returns the name of the command as a char array
+     * Returns the name of the command
      */
     virtual QString getName() = 0;
 
 protected:
+    // TCP Socket the client is connected to
     QTcpSocket* socket;
+
+    // Client file requests will be relative to this directory
+    QDir dataDir;
 
 };
 

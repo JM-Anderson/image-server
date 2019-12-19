@@ -3,13 +3,17 @@
 
 #include <QStringList>
 #include <QTcpServer>
+#include <QDir>
 
 class Server : public QTcpServer
 {
     Q_OBJECT
 
 public:
-    Server(QObject *parent = nullptr);
+    Server(QDir dataDir, QObject *parent = nullptr);
+
+private:
+    QDir dataDir;
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;

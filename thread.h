@@ -17,7 +17,7 @@ class Thread : public QThread
     Q_OBJECT
 
 public:
-    Thread(qintptr socketDescriptor, QObject *parent);
+    Thread(qintptr socketDescriptor, QDir dataDir, QObject *parent);
 
     void run() override;
 
@@ -25,6 +25,9 @@ signals:
     void error(QTcpSocket::SocketError socketError);
 
 private:
+    // Data Location
+    QDir dataDir;
+
     // TCP Socket information
     qintptr socketDescriptor;
     QTcpSocket* socket;
@@ -37,7 +40,6 @@ private:
 
 private slots:
     void onReadyRead();
-    bool sendFile(QString path);
 };
 
 #endif

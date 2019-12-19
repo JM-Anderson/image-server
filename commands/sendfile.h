@@ -19,37 +19,44 @@ public:
         return "sendfile";
     }
 
-    bool run(QByteArray args) {
-        QString path(args);
-
-        QFile file(path);
+    /*
+     * Sends the requested file.
+     * Argument corresponds to requested data file located in dataDir in
+     * this case.
+     */
+    bool run(QString arg) {
+        // Checks to make sure file path is valid
+        QFile file{dataDir.filePath(arg)};
         if (!file.open(QIODevice::ReadOnly))
                 return false;
 
-        // Number of bytes read so far
-        qint64 amountRead = 0;
-
+        // Loops until finished reading file
         while (!file.atEnd()){
+            // Buffer that will contain all pixels
             QByteArray outBuffer;
+
+            // Stream to easily write to buffer
             QDataStream outStream(&outBuffer, QIODevice::WriteOnly);
 
+            // Reads one full frame worth of pixels
+            // The amount read/sent at one time is arbitrary and 480*640
+            // is only chosen because this is the framesize during testing.
+            // Changing this value should not affect functionality.
             for (int i=0; i < 480*640; i++) {
                 uint16_t pix;
                 file.read(reinterpret_cast<char *>(&pix), sizeof(pix));
                 outStream << pix;
             }
-            amountRead += outBuffer.size();
-            cout << "Amount read: " << amountRead << "\n";
 
             if (socket->state() == QAbstractSocket::ConnectedState) {
-                qint64 written = socket->write(outBuffer);
-
-                cout << "Bytes written: " << written << "\n";
+                // Sends one frame of pixels through TCPSocket
+                socket->write(outBuffer);
 
                 // Forces socket to write data immediately rather than
-                // add to buffer
+                // adding to internal buffer
                 socket->waitForBytesWritten();
             } else {
+                // Exits if the socket is disconnected
                 break;
             }
         }
