@@ -27,6 +27,7 @@ void Thread::run()
 
     // Main loop - waits for then executes commands
     while (true) {
+        cout << "Checking for messages...";
         if (socket->waitForReadyRead()) {
             onReadyRead();
         }
@@ -41,6 +42,8 @@ void Thread::onReadyRead() {
 
     // Acccept all incoming data into buffer
     inBuffer.append(socket->readAll());
+
+    cout << "Received message";
 
     /*
      * If there is a terminating character, assume a full command was
