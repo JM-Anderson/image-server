@@ -13,6 +13,7 @@ Thread::Thread(qintptr socketDescriptor, QDir dataDir, QObject *parent)
 void Thread::run()
 {
     socket = new QTcpSocket();
+    client = new Client(this);
 
     // Opens socket based on the socketDescriptor passed from the
     // main thread
@@ -25,12 +26,25 @@ void Thread::run()
     // Setting up command handler
     cmdHandler << new SendFile(socket, dataDir);
 
+    cmdHandler.tryRun("sendfile", "image1.envi");
+
     // Main loop - waits for then executes commands
     while (true) {
-        cout << "Checking for messages...";
-        if (socket->waitForReadyRead()) {
-            onReadyRead();
+        QTextStream s(stdin);
+        QString input = s.readLine();
+        if (input == "whatever") {
+            client->tcpConnect(QHostAddress::LocalHost, 1235);
+            while (true) {
+                if (client->waitForReadyRead()) {
+                    client->readTcpData();
+
+                }
+
+            }
         }
+        //if (socket->waitForReadyRead()) {
+        //    onReadyRead();
+        //}
     }
 }
 

@@ -18,7 +18,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
 	main.cpp \
 	server.cpp \
-	thread.cpp
+	thread.cpp \
+    client.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -30,4 +31,5 @@ HEADERS += \
     server.h \
     thread.h \
     commands/sendfile.h \
-    commandhandler.h
+    commandhandler.h \
+    client.h

@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "command.h"
+#include "client.h"
 #include "commandhandler.h"
 #include "commands/sendfile.h"
 
@@ -28,9 +29,12 @@ private:
     // Data Location
     QDir dataDir;
 
-    // TCP Socket information
+    // TCP Socket information - for sending data
     qintptr socketDescriptor;
     QTcpSocket* socket;
+
+    // TCP client for receiving data
+    Client* client;
 
     // Buffer for holding incoming data
     QByteArray inBuffer;
