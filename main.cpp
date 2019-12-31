@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
     static const quint16 DEFAULT_PORT = 1234;
     static const QString DEFAULT_PORT_STR = "1234";
-    static const QString DEFAULT_DATA_DIR = "/home/joshua/Documents/testbed-images";
+    static const QString DEFAULT_DATA_DIR = "E://Docs/testbed-images";
 
     QCoreApplication app(argc, argv);
 

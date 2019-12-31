@@ -7,7 +7,6 @@ Client::Client(QObject *parent) : QObject(parent)
 
 void Client::tcpConnect(const QHostAddress ipAddress, const quint16 port) {
     socket->abort();
-    inBuffer.clear();
     socket->connectToHost(ipAddress, port);
 }
 
@@ -16,9 +15,9 @@ void Client::tcpConnect(const QHostAddress ipAddress, const quint16 port) {
  * and hardware integers are most likely stored with LittleEndian. QDataStream
  * automatically reads in BigEndian and converts to the correct endianness.
 */
-void Client::readTcpData()
+char* Client::readTcpData()
 {
-    inBuffer.append(socket->readAll());
+    return socket->readAll().data();
 }
 
 bool Client::waitForReadyRead()

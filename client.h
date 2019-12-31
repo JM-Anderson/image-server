@@ -15,13 +15,11 @@ public:
 
     // Handles TCP connection
     void tcpConnect(const QHostAddress ipAddress, const quint16 port);
-    void readTcpData();
+    char* readTcpData();
     bool waitForReadyRead();
 
 private:
     QTcpSocket* socket = nullptr;
-
-    QByteArray inBuffer;
 };
 
 #endif // CLIENT_H

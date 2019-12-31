@@ -35,6 +35,7 @@ private:
 
     // TCP client for receiving data
     Client* client;
+    bool relayMode = false;
 
     // Buffer for holding incoming data
     QByteArray inBuffer;
