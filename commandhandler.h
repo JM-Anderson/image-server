@@ -21,7 +21,7 @@ public:
     }
 
     void add(Command* cmd) {
-        commands[cmd->getName()] = cmd;
+        commands[cmd->getName().toLower()] = cmd;
     }
 
     CommandHandler* operator <<(Command* cmd) {
@@ -29,13 +29,13 @@ public:
         return this;
     }
 
-    bool tryRun(const QString cmdName, const QString args) {
-        if (commands.contains(cmdName)) {
-            cout << "Running [" << cmdName.toStdString() << "]\n";
-            return commands.value(cmdName)->run(args);
+    Command* getCmd(const QString cmdName) {
+        if (commands.contains(cmdName.toLower())) {
+            Command* cmd = commands.value(cmdName);
+            return cmd;
         } else {
             cout << "Command not found: " << cmdName.toStdString() << "\n";
-            return false;
+            return nullptr;
         }
     }
 };

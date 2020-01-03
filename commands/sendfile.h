@@ -19,6 +19,10 @@ public:
         return "send";
     }
 
+    bool isBlocking() {
+        return true;
+    }
+
     /*
      * Sends the requested file.
      * Argument corresponds to requested data file located in dataDir in
@@ -30,6 +34,8 @@ public:
                 return false;
 
         cout << "Starting send\n";
+
+        qint64 bytesSent = 0;
 
         while (!file.atEnd()) {
 
@@ -45,19 +51,29 @@ public:
             }
 
             if (outSocket->state() == QAbstractSocket::ConnectedState) {
-                outSocket->write(outBuffer);
-                outSocket->waitForBytesWritten();
+                bytesSent += outSocket->write(outBuffer);
+
+                if (!outSocket->waitForBytesWritten()){
+                    cout << "Couldn't write any bytes\n";
+                    break;
+                }
             } else {
                 // Exits if the socket is disconnected
                 cout << "Client disconnected unexpectedly\n";
                 break;
             }
         }
+
         file.close();
 
-        cout << "Send complete\n";
+        if (bytesSent < file.size()) {
+            cout << QString("Sent %1/%2 bytes\n").arg(bytesSent).arg(file.size()).toStdString();
+            return false;
+        } else {
+            cout << "Send complete\n";
 
-        return true;
+            return true;
+        }
     }
 };
 

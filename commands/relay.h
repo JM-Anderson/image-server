@@ -18,6 +18,10 @@ public:
         return "relay";
     }
 
+    bool isBlocking() {
+        return true;
+    }
+
     /*
      * Relays any incoming data from inSocket to the client, outSocket
      */

@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
     static const quint16 DEFAULT_PORT = 1234;
     static const QString DEFAULT_PORT_STR = "1234";
-    static const QString DEFAULT_DATA_DIR = "E://Docs/testbed-images";
+    static const QString DEFAULT_DATA_DIR = "/data";
 
     QCoreApplication app(argc, argv);
 
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 
     // Get port number
     bool valid;
-    quint16 port = cmdParser.value("port").toUInt(&valid);
+    quint16 port = cmdParser.value("port").toUShort(&valid);
     if (!valid) {
         cout << "Invalid port: " << cmdParser.value("port").toStdString()
              << "\nResorting to default port: " << DEFAULT_PORT_STR.toStdString()

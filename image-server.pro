@@ -27,8 +27,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     command.h \
+    commands/changethread.h \
     commands/relay.h \
+    commands/sendfile.h \
+    commands/threadinfo.h \
     server.h \
     thread.h \
-    commands/sendfile.h \
     commandhandler.h
