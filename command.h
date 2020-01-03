@@ -9,8 +9,8 @@ class Command : public QObject
     Q_OBJECT
 
 public:
-    Command(QTcpSocket* socket, QDir dataDir, QObject* parent = nullptr) :
-        QObject(parent), socket(socket), dataDir(dataDir) {}
+    Command(QTcpSocket* outSocket, QTcpSocket* inSocket, QDir dataDir, QObject* parent = nullptr) :
+        QObject(parent), outSocket(outSocket), inSocket(inSocket), dataDir(dataDir) {}
 
     /*
      * Default destructor
@@ -28,8 +28,11 @@ public:
     virtual QString getName() = 0;
 
 protected:
-    // TCP Socket the client is connected to
-    QTcpSocket* socket;
+    // TCP Socket data is being sent to
+    QTcpSocket* outSocket;
+
+    // TCP Socket data is received from
+    QTcpSocket* inSocket;
 
     // Client file requests will be relative to this directory
     QDir dataDir;

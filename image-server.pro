@@ -18,8 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
 	main.cpp \
 	server.cpp \
-	thread.cpp \
-    client.cpp
+	thread.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -28,8 +27,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     command.h \
+    commands/relay.h \
     server.h \
     thread.h \
     commands/sendfile.h \
-    commandhandler.h \
-    client.h
+    commandhandler.h

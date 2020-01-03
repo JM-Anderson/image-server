@@ -31,7 +31,7 @@ public:
 
     bool tryRun(const QString cmdName, const QString args) {
         if (commands.contains(cmdName)) {
-            cout << "[" << cmdName.toStdString() << "]\n";
+            cout << "Running [" << cmdName.toStdString() << "]\n";
             return commands.value(cmdName)->run(args);
         } else {
             cout << "Command not found: " << cmdName.toStdString() << "\n";

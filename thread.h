@@ -7,9 +7,10 @@
 #include <iostream>
 
 #include "command.h"
-#include "client.h"
 #include "commandhandler.h"
+
 #include "commands/sendfile.h"
+#include "commands/relay.h"
 
 using namespace std;
 
@@ -31,20 +32,14 @@ private:
 
     // TCP Socket information - for sending data
     qintptr socketDescriptor;
-    QTcpSocket* socket;
+    QTcpSocket* outSocket;
 
     // TCP client for receiving data
-    Client* client;
-    bool relayMode = false;
+    QTcpSocket* inSocket;
 
-    // Buffer for holding incoming data
-    QByteArray inBuffer;
-
-    // Handles incoming commands
+    // Handles user commands
+    void getCommand();
     CommandHandler cmdHandler;
-
-private slots:
-    void onReadyRead();
 };
 
 #endif

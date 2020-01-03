@@ -1,8 +1,5 @@
 #include "thread.h"
 
-#include <QIODevice>
-#include <QTextStream>
-
 Thread::Thread(qintptr socketDescriptor, QDir dataDir, QObject *parent)
     : QThread(parent), dataDir(dataDir), socketDescriptor(socketDescriptor) {
 }
@@ -12,72 +9,44 @@ Thread::Thread(qintptr socketDescriptor, QDir dataDir, QObject *parent)
  */
 void Thread::run()
 {
-    socket = new QTcpSocket();
-    QTcpSocket* clientSock = new QTcpSocket();
+    outSocket = new QTcpSocket();
+    inSocket = new QTcpSocket();
 
     // Opens socket based on the socketDescriptor passed from the
     // main thread
-    if (!socket->setSocketDescriptor(socketDescriptor)) {
-        emit error(socket->error());
+    if (!outSocket->setSocketDescriptor(socketDescriptor)) {
+        emit error(outSocket->error());
         return;
     }
     cout << "Receiving client\n";
 
     // Setting up command handler
-    cmdHandler << new SendFile(socket, dataDir);
+    cmdHandler << new SendFile(outSocket, inSocket, dataDir);
+    cmdHandler << new Relay(outSocket, inSocket, dataDir);
 
-    // Main loop - waits for then executes commands
+    // Main loop
     while (true) {
-        if (!relayMode){
-            QTextStream s(stdin);
-            QString input = s.readLine();
-            if (input == "relay") {
-                clientSock->connectToHost(QHostAddress::LocalHost, 1235);
-                relayMode = true;
-            } else if (input == "send") {
-                cmdHandler.tryRun("sendfile", "image1.envi");
-            }
-        } else {
-            if (clientSock->waitForReadyRead()) {
-                QByteArray data = clientSock->readAll();
-                cout << QString("%1 Reading data...\n").toStdString();
-                qint64 written = socket->write(data);
-                socket->waitForBytesWritten();
-                cout << written << "\n";
-            }
-        }
+        getCommand();
     }
 }
 
-void Thread::onReadyRead() {
-    /*
-     * Note: there could be a memory leak here if malicious clients keep sending
-     * messages that have no '\0' character to signal the end of a message.
-     */
+// Takes console input then runs the corresponding command
+void Thread::getCommand() {
+    QTextStream s(stdin);
+    QString input = s.readLine();
 
-    // Acccept all incoming data into buffer
-    inBuffer.append(socket->readAll());
-
-    cout << "Received message";
-
-    /*
-     * If there is a terminating character, assume a full command was
-     * sent and try to execute it */
-    while (inBuffer.contains('\0')) {
-        QStringList cmd = QString(inBuffer).split(':');
-
-        QString cmdName = cmd[0];
-        QString cmdArg;
-        if (cmd.length() > 1)
-            cmdArg = cmd[1];
-
-        // This deletes all the characters that were just read
-        inBuffer.remove(0, inBuffer.indexOf('\0')+1);
-
-        // endl is necessary here
-        cout << "Received command: " <<  cmdName.toStdString() << "\n";
-
-        cmdHandler.tryRun(cmdName, cmdArg);
+    if (input.trimmed() == "") {
+        return;
     }
 
+    // Takes the first word as the command name and reformats other words
+    // to a standard form
+    QStringList splitArgs = input.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+    QString cmdName = splitArgs[0];
+    splitArgs.removeAt(0);
+    QString args = splitArgs.join(" ");
+
+    if (cmdHandler.tryRun(cmdName, args)) {
+        cout << cmdName.toStdString() << " succeeded\n";
+    }
 }
